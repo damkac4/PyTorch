@@ -21,25 +21,30 @@ class LinearRegressionModel(nn.Module): # <- almost everything in PyTorch is a n
     def __init__(self):
         super().__init__()
         self.weights = nn.Parameter(
-            torch.randn(1,  # <- start with random weights (this will get adjusted as the model learns)
-                        dtype=torch.float),  # <- PyTorch loves float32 by default
-            requires_grad=True)  # <- can we update this value with gradient descent?)
+            torch.randn(1, dtype=torch.float))
 
         self.bias = nn.Parameter(
-            torch.randn(1,  # <- start with random bias (this will get adjusted as the model learns)
-                        dtype=torch.float),  # <- PyTorch loves float32 by default
-            requires_grad=True)  # <- can we update this value with gradient descent?))
+            torch.randn(1, dtype=torch.float))
 
     # Forward defines the computation in the model
-    def forward(self, x): # <- "x" is the input data (e.g. training/testing features)
+    def forward(self, x: torch.Tensor) -> torch.Tensor: # <- "x" is the input data (e.g. training/testing features)
         return self.weights * x + self.bias  # <- this is the linear regression formula (y = m*x + b)
 
 
-
+# Set manual seed since nn.Parameter are randomly initialzied
 torch.manual_seed(42)
 
 # Create an instance of the model (this is a subclass of nn.Module that contains nn.Parameter(s))
 model_0 = LinearRegressionModel()
+
+# Create the loss function
+loss_fn = nn.L1Loss()
+
+# Create the optimizer
+optimizer = torch.optim.SGD(params=model_0.parameters(), # parameters of target model to optimize
+                            lr=0.01)
+
+
 
 # Check the nn.Parameter(s) within the nn.Module subclass we created
 print(model_0.state_dict())
@@ -49,22 +54,8 @@ with torch.inference_mode():
     y_preds = model_0(X_test)
 
 
-# Create the loss function
-loss_fn = nn.L1Loss()
-
-# Create the optimizer
-optimizer = torch.optim.SGD(params=model_0.parameters(), # parameters of target model to optimize
-                            lr=0.01)
-
-torch.manual_seed(42)
-
 # Set the number of epochs (how many times the model will pass over the training data)
 epochs = 1000
-
-# Create empty loss lists to track values
-train_loss_values = []
-test_loss_values = []
-epoch_count = []
 
 for epoch in range(epochs):
     ### Training
@@ -99,13 +90,7 @@ for epoch in range(epochs):
 
       # 2. Caculate loss on test data
       test_loss = loss_fn(test_pred, y_test.type(torch.float)) # predictions come in torch.float datatype, so comparisons need to be done with tensors of the same type
-      #
-      # # Print out what's happening
-      # if epoch % 10 == 0:
-      #       epoch_count.append(epoch)
-      #       train_loss_values.append(loss.detach().numpy())
-      #       test_loss_values.append(test_loss.detach().numpy())
-      #       print(f"Epoch: {epoch} | MAE Train Loss: {loss} | MAE Test Loss: {test_loss} ")
+
 
 
 
