@@ -45,6 +45,7 @@ class LinearRegressionModel(nn.Module):
     def __init__(self):
         super().__init__()
          # Use nn.Linear() for creating the model parameters
+        # in_features is the number of dimensions your input data has and out_features dimensions you'd like it to output have.
         self.linear_layer = nn.Linear(in_features=1,
                                       out_features=1)
 
