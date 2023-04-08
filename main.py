@@ -79,18 +79,17 @@ for epoch in range(epochs):
 
     # 1. Forward pass on train data using the forward() method inside
     y_pred = model_0(X_train)
-    # print(y_pred)
 
     # 2. Calculate the loss (how different are our models predictions to the ground truth)
     loss = loss_fn(y_pred, y_train)
 
-    # 3. Zero grad of the optimizer
+    # 3. The optimizers gradients are set to zero (they are accumulated by default) so they can be recalculated for the specific training step.
     optimizer.zero_grad()
 
-    # 4. Loss backwards
+    # 4. Computes the gradient of the loss with respect for every model parameter to be updated (each parameter with requires_grad=True). This is known as backpropagation.
     loss.backward()
 
-    # 5. Progress the optimizer
+    # 5. Udates parameters with requires_grad=True with respect to the loss gradients in order to improve them.
     optimizer.step()
 
     ### Testing
