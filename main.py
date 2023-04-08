@@ -27,18 +27,32 @@ y_train = y_train.to(device)
 y_test = y_test.to(device)
 
 # Create a Linear Regression model class
-class LinearRegressionModel(nn.Module): # <- almost everything in PyTorch is a nn.Module (think of this as neural network lego blocks)
+# class LinearRegressionModel(nn.Module): # <- almost everything in PyTorch is a nn.Module
+#     def __init__(self):
+#         super().__init__()
+#         self.weights = nn.Parameter(
+#             torch.randn(1, dtype=torch.float))
+#
+#         self.bias = nn.Parameter(
+#             torch.randn(1, dtype=torch.float))
+#
+#     # Forward defines the computation in the model
+#     def forward(self, x: torch.Tensor) -> torch.Tensor: # <- "x" is the input data (e.g. training/testing features)
+#         return self.weights * x + self.bias  # <- this is the linear regression formula (y = m*x + b)
+
+# Create a Linear Regression model class (different way)
+class LinearRegressionModel(nn.Module):
     def __init__(self):
         super().__init__()
-        self.weights = nn.Parameter(
-            torch.randn(1, dtype=torch.float))
+         # Use nn.Linear() for creating the model parameters
+        self.linear_layer = nn.Linear(in_features=1,
+                                      out_features=1)
 
-        self.bias = nn.Parameter(
-            torch.randn(1, dtype=torch.float))
+    # Define the forward computation (input data x flows through nn.Linear())
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.linear_layer(x)
 
-    # Forward defines the computation in the model
-    def forward(self, x: torch.Tensor) -> torch.Tensor: # <- "x" is the input data (e.g. training/testing features)
-        return self.weights * x + self.bias  # <- this is the linear regression formula (y = m*x + b)
+
 
 
 # Set manual seed since nn.Parameter are randomly initialzied
@@ -46,6 +60,7 @@ torch.manual_seed(42)
 
 # Create an instance of the model (this is a subclass of nn.Module that contains nn.Parameter(s))
 model_0 = LinearRegressionModel()
+print(model_0.state_dict())
 
 # Check the nn.Parameter(s) within the nn.Module subclass we created
 print("The model original values for weights and bias:")
