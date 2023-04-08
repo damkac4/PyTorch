@@ -6,6 +6,7 @@ from torch import nn
 # Create *known* parameters
 weight = 0.7
 bias = 0.3
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
 # Create data
 start = 0
@@ -17,6 +18,13 @@ y = weight * X + bias
 train_split = int(0.8 * len(X))  # 80% of data used for training set, 20% for testing
 X_train, y_train = X[:train_split], y[:train_split]
 X_test, y_test = X[train_split:], y[train_split:]
+
+# Put data on the available device
+# Without this, error will happen (not all model/data on device)
+X_train = X_train.to(device)
+X_test = X_test.to(device)
+y_train = y_train.to(device)
+y_test = y_test.to(device)
 
 # Create a Linear Regression model class
 class LinearRegressionModel(nn.Module): # <- almost everything in PyTorch is a nn.Module (think of this as neural network lego blocks)
@@ -39,6 +47,13 @@ torch.manual_seed(42)
 # Create an instance of the model (this is a subclass of nn.Module that contains nn.Parameter(s))
 model_0 = LinearRegressionModel()
 
+# Check the nn.Parameter(s) within the nn.Module subclass we created
+print("The model original values for weights and bias:")
+print(model_0.state_dict())
+
+# Set model to GPU if it's availalble, otherwise it'll default to CPU
+model_0.to(device)
+
 # Create the loss function
 loss_fn = nn.L1Loss()
 
@@ -46,11 +61,6 @@ loss_fn = nn.L1Loss()
 optimizer = torch.optim.SGD(params=model_0.parameters(), # parameters of target model to optimize
                             lr=0.01)
 
-
-
-# Check the nn.Parameter(s) within the nn.Module subclass we created
-print("The model original values for weights and bias:")
-print(model_0.state_dict())
 
 # Make predictions with model
 with torch.inference_mode():
@@ -60,7 +70,7 @@ with torch.inference_mode():
 
 
 # Set the number of epochs (how many times the model will pass over the training data)
-epochs = 1000
+epochs = 300
 
 for epoch in range(epochs):
 
@@ -96,6 +106,14 @@ for epoch in range(epochs):
 
     if epoch % 100 == 0:
         print(f"Epoch: {epoch} | Train loss: {loss} | Test loss: {test_loss}")
+
+
+
+
+
+
+
+
 
 
 # Find our model's learned parameters
