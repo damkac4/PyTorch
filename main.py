@@ -79,17 +79,18 @@ for epoch in range(epochs):
     # 5. Progress the optimizer
     optimizer.step()
 
-    ### Testing
 
-    # Put the model in evaluation mode
-    model_0.eval()
 
-    with torch.inference_mode():
-      # 1. Forward pass on test data
-      test_pred = model_0(X_test)
 
-      # 2. Caculate loss on test data
-      test_loss = loss_fn(test_pred, y_test.type(torch.float)) # predictions come in torch.float datatype, so comparisons need to be done with tensors of the same type
+### Testing
+
+# Put the model in evaluation mode
+model_0.eval()
+
+with torch.inference_mode():
+    # 1. Forward pass on test data
+    test_pred = model_0(X_test)
+
 
 
 
