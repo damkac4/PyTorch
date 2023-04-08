@@ -2,6 +2,7 @@ from pathlib import Path
 import torch
 from torch import nn
 
+
 # Create *known* parameters
 weight = 0.7
 bias = 0.3
@@ -82,18 +83,19 @@ for epoch in range(epochs):
     # 5. Progress the optimizer
     optimizer.step()
 
+    ### Testing
 
+    # Put the model in evaluation mode for testing
+    model_0.eval()
+    # 1. Forward pass
+    with torch.inference_mode():
+        test_pred = model_0(X_test)
 
-### Testing
+        # 2. Calculate the loss
+        test_loss = loss_fn(test_pred, y_test)
 
-# Put the model in evaluation mode
-model_0.eval()
-
-with torch.inference_mode():
-    # 1. Forward pass on test data
-    test_pred = model_0(X_test)
-    loss = loss_fn(test_pred, y_test)
-
+    if epoch % 100 == 0:
+        print(f"Epoch: {epoch} | Train loss: {loss} | Test loss: {test_loss}")
 
 
 # Find our model's learned parameters
