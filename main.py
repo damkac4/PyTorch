@@ -1,3 +1,4 @@
+from pathlib import Path
 import torch
 from torch import nn
 
@@ -47,18 +48,20 @@ optimizer = torch.optim.SGD(params=model_0.parameters(), # parameters of target 
 
 
 # Check the nn.Parameter(s) within the nn.Module subclass we created
+print("The model original values for weights and bias:")
 print(model_0.state_dict())
 
 # Make predictions with model
 with torch.inference_mode():
     y_preds = model_0(X_test)
 
+### Training
+
 
 # Set the number of epochs (how many times the model will pass over the training data)
 epochs = 1000
 
 for epoch in range(epochs):
-    ### Training
 
     # Put model in training mode (this is the default state of a model)
     model_0.train()
@@ -81,7 +84,6 @@ for epoch in range(epochs):
 
 
 
-
 ### Testing
 
 # Put the model in evaluation mode
@@ -90,15 +92,41 @@ model_0.eval()
 with torch.inference_mode():
     # 1. Forward pass on test data
     test_pred = model_0(X_test)
-
-
+    loss = loss_fn(test_pred, y_test)
 
 
 
 # Find our model's learned parameters
-print("The model learned the following values for weights and bias:")
+print("\nThe model learned the following values for weights and bias:")
 print(model_0.state_dict())
 print("\nAnd the original values for weights and bias are:")
 print(f"weights: {weight}, bias: {bias}")
 
 
+
+
+
+
+###### SAVING AND LOADING ######
+
+# 1. Create models directory
+MODEL_PATH = Path("models")
+MODEL_PATH.mkdir(parents=True, exist_ok=True)
+
+# 2. Create model save path
+MODEL_NAME = "pytorch_model.pth"
+MODEL_SAVE_PATH = MODEL_PATH / MODEL_NAME
+
+# 3. Save the model state dict
+print(f"\nSaving model to: {MODEL_SAVE_PATH}")
+torch.save(obj=model_0.state_dict(), # only saving the state_dict() only saves the models learned parameters
+           f=MODEL_SAVE_PATH)
+
+# Instantiate a new instance of our model (this will be instantiated with random weights)
+loaded_model_0 = LinearRegressionModel()
+
+# Load the state_dict of our saved model (this will update the new instance of our model with trained weights)
+loaded_model_0.load_state_dict(torch.load(f=MODEL_SAVE_PATH))
+
+print("\nThe model loaded values for weights and bias:")
+print(loaded_model_0.state_dict())
